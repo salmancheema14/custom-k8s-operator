@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Github\\operator-demo\\custom-k8s-operator\\custom-k8s-operator\\custom-k8s-operator.csproj": {}
+    "D:\\Github\\operator-demo\\custom-k8s-operator\\src\\custom-k8s-operator\\custom-k8s-operator.csproj": {}
   },
   "projects": {
-    "D:\\Github\\operator-demo\\custom-k8s-operator\\custom-k8s-operator\\custom-k8s-operator.csproj": {
+    "D:\\Github\\operator-demo\\custom-k8s-operator\\src\\custom-k8s-operator\\custom-k8s-operator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Github\\operator-demo\\custom-k8s-operator\\custom-k8s-operator\\custom-k8s-operator.csproj",
+        "projectUniqueName": "D:\\Github\\operator-demo\\custom-k8s-operator\\src\\custom-k8s-operator\\custom-k8s-operator.csproj",
         "projectName": "custom-k8s-operator",
-        "projectPath": "D:\\Github\\operator-demo\\custom-k8s-operator\\custom-k8s-operator\\custom-k8s-operator.csproj",
+        "projectPath": "D:\\Github\\operator-demo\\custom-k8s-operator\\src\\custom-k8s-operator\\custom-k8s-operator.csproj",
         "packagesPath": "C:\\Users\\sacheema\\.nuget\\packages\\",
-        "outputPath": "D:\\Github\\operator-demo\\custom-k8s-operator\\custom-k8s-operator\\obj\\",
+        "outputPath": "D:\\Github\\operator-demo\\custom-k8s-operator\\src\\custom-k8s-operator\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

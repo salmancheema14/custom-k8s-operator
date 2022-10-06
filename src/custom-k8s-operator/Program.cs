@@ -1,3 +1,7 @@
+//  <copyright company="Microsoft">
+//     Copyright (c) Microsoft Corporation. All rights reserved.
+//  </copyright>
+
 using KubeOps.Operator;
 
 namespace custom_k8s_operator

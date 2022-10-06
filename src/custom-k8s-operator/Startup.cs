@@ -1,9 +1,11 @@
-﻿using DotnetKubernetesClient;
+﻿//  <copyright company="Microsoft">
+//     Copyright (c) Microsoft Corporation. All rights reserved.
+//  </copyright>
+
+using DotnetKubernetesClient;
 using k8s;
 using KubeOps.Operator;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using System.Reflection;
 
 namespace custom_k8s_operator
 {
@@ -49,15 +51,6 @@ namespace custom_k8s_operator
             {
                 services.TryAddSingleton<IKubernetes>(sp => new Kubernetes(KubernetesClientConfiguration.BuildConfigFromConfigFile()));
                 services.TryAddSingleton<IKubernetesClient>(sp => new KubernetesClient(KubernetesClientConfiguration.BuildConfigFromConfigFile()));
-            }
-
-            if (this.Environment.IsDevelopment())
-            {
-                services.AddTransient<ICertificateProvider, DevMachineCertificateProvider>();
-            }
-            else
-            {
-                services.AddTransient<ICertificateProvider, InClusterCertificateProvider>();
             }
         }
 

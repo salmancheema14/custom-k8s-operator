@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bWxJviSPo4hfAmKAqkNdhUEAUodTBVhnR50n0pVEkMv6z+kJ3Udw9cate2FDS49Yc0Q3C5JkzTniETZP3C/7dg==",
+  "dgSpecHash": "qjooBZDO7F+RVUDapXftp+areMil8gPNAZF8e+uLKcZqwJqUJ6y4B9SgY9TGRVSruFq91qgehTrk3mpQTQAsLQ==",
   "success": true,
-  "projectFilePath": "D:\\Github\\operator-demo\\custom-k8s-operator\\custom-k8s-operator\\custom-k8s-operator.csproj",
+  "projectFilePath": "D:\\Github\\operator-demo\\custom-k8s-operator\\src\\custom-k8s-operator\\custom-k8s-operator.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sacheema\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
     "C:\\Users\\sacheema\\.nuget\\packages\\comparenetobjects\\4.77.0\\comparenetobjects.4.77.0.nupkg.sha512",
