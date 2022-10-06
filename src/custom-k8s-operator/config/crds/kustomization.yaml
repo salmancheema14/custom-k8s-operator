@@ -1,0 +1,6 @@
+commonLabels:
+  operator-element: crd
+resources:
+- MyCustomResources_percept_azure_windows_net.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
