@@ -32,6 +32,17 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+
+# Build generated files in src
+/src/**/objd/**/*
+/src/**/obj/**/*
+/src/**/bin/**/*
+/src/**/gen/**/*
+/src/**/*.nuspec
+/src/**/StyleCop.Cache
+/src/**/[Ll]ogs/**/stdout.txt
+/src/**/[Ll]ogs/**/stderr.txt
+
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
