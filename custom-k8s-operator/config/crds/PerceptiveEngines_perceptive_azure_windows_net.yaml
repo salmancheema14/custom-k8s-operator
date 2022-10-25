@@ -1,17 +1,17 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: MyCustomResources.percept.azure.windows.net
+  name: PerceptiveEngines.perceptive.azure.windows.net
 spec:
-  group: percept.azure.windows.net
+  group: perceptive.azure.windows.net
   names:
-    kind: MyCustomResource
-    listKind: MyCustomResourceList
-    plural: MyCustomResources
-    singular: mycustomresource
+    kind: PerceptiveEngine
+    listKind: PerceptiveEngineList
+    plural: PerceptiveEngines
+    singular: perceptiveengine
   scope: Namespaced
   versions:
-  - name: v1apha1
+  - name: v1
     schema:
       openAPIV3Schema:
         properties:
