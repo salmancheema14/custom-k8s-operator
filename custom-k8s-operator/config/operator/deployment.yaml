@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    operator-deployment: platform-operator
+    operator-deployment: custom-k8s-operator
   name: operator
 spec:
   replicas: 1
   revisionHistoryLimit: 0
   selector:
     matchLabels:
-      operator: platform-operator
+      operator: custom-k8s-operator
   template:
     metadata:
       labels:
-        operator: platform-operator
+        operator: custom-k8s-operator
     spec:
       containers:
       - env:

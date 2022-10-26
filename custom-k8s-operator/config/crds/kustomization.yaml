@@ -1,6 +1,6 @@
 commonLabels:
   operator-element: crd
 resources:
-- PerceptiveEngines_perceptive_azure_windows_net.yaml
+- skills_percept_demo_local.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

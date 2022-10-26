@@ -4,10 +4,10 @@ metadata:
   name: operator-role
 rules:
 - apiGroups:
-  - perceptive.azure.windows.net
+  - percept.demo.local
   - coordination.k8s.io
   resources:
-  - PerceptiveEngines
+  - skills
   - leases
   verbs:
   - '*'
@@ -28,9 +28,9 @@ rules:
   - get
   - list
 - apiGroups:
-  - perceptive.azure.windows.net
+  - percept.demo.local
   resources:
-  - PerceptiveEngines/status
+  - skills/status
   verbs:
   - get
   - patch
