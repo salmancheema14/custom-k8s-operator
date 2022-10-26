@@ -24,22 +24,22 @@ namespace custom_k8s_operator
         /* snip... */
         public void ConfigureServices(IServiceCollection services)
         {
-            //services
-            //    .AddKubernetesOperator(); // config / settings here
+            services
+                .AddKubernetesOperator(); // config / settings here
 
             // your own dependencies
             //services.AddTransient<IManager, TestManager.TestManager>();
 
 
-            var operatorBuilder = services.AddKubernetesOperator(configure => {
-                configure.Name = "platform-operator";
-                configure.WatcherHttpTimeout = 60 * 60; // TODO: temporarily workaround for next issue: https://github.com/buehler/dotnet-operator-sdk/issues/477. Remove after the fix
-            });
+            //var operatorBuilder = services.AddKubernetesOperator(configure => {
+                //configure.Name = "platform-operator";
+                //configure.WatcherHttpTimeout = 60 * 60; // TODO: temporarily workaround for next issue: https://github.com/buehler/dotnet-operator-sdk/issues/477. Remove after the fix
+            //});
 
-            if (this.Environment.IsDevelopment())
-            {
-                operatorBuilder.AddWebhookLocaltunnel();
-            }
+            //if (this.Environment.IsDevelopment())
+            //{
+                //operatorBuilder.AddWebhookLocaltunnel();
+            //}
 
             // Register Kubernetes clients
             if (!this.Environment.IsDevelopment())
