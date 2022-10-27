@@ -43,6 +43,18 @@ If your `kubectl` context is not set properly, try the following:
 2. Use `kubectl config get-contexts` to see a list of all available contexts. This list should include an entry for your minikube cluster.    
 3. Use `kubectl config use-context minikube` to set the current context explicitly to minikube, if not already set.   
 
+**Minikube-specific Things**     
+
+You can always safely destroy your local minikube cluster and re-initialize it by 
+```
+minikube stop
+minikube delete
+minikube start
+```
+
+Minikube also comes with a mildly useful dashboard. You can start it by executing `minikube dashboard`, which will trigger a browser window. 
+
+
 ---
 
 ## Build and Deploy Toy Operator to your Kubernetes Cluster
