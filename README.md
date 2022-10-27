@@ -1,1 +1,52 @@
-# custom-k8s-operator
+# C# Operator Sample for Kubernetes (using KubeOps)
+
+This project has skeleton code to build and deploy a toy operator example on your choice of kubernetes cluster.   
+
+
+*Note: The instructions below describe how to build and run this project using a local minikube cluster. However, if your `kubectl` is already configured to manage an existing cluster (AKS/Kind/other), feel free to use that as a target. As long as `kubectl` has appropriate access to a K8S cluster, the build and deploy instructions should work*.    
+
+## Pre-Requisites
+
+You will need the following
+1. Dotnet 6.0
+2. Visual Studio. THis is optional, but highly useful (The project has been tested using Visual Studio 2022) 
+3. Install `kubectl`on your machine, if not already installed.    
+    a. If you have Azure CLI installed, you can use `az aks install-cli` command in Windows Powershell to install kubectl.    
+    b. Remember to update `$PATH` variable on windows machines
+4. Install Minikube on your machine ([instructions](https://minikube.sigs.k8s.io/docs/start/)).
+5. Open a command prompt in Administrator mode, and start a local minikube cluster, using `minikube start`.
+6. Starting your local cluster for the first time does two things:      
+    a. A context entry is configured in the local kubeconfig file for the minikube cluster.
+    b. The current context in `kubectl` is set to point to your local minikube cluster.
+    
+**Verification**    
+
+Try running the following `kubectl` commands to confirm its connection to your local minikube cluster
+```
+kubectl cluster-info
+kubectl get nodes
+kubectl api-resources
+```
+
+**Troubleshooting**    
+
+If your `kubectl` context is not set properly, try the following:    
+1. Use `kubectl config current-context` to see the name of the target cluster.    
+2. Use `kubectl config get-contexts` to see a list of all available contexts. This list should include an entry for your minikube cluster.    
+3. Use `kubectl config use-context minikube` to set the current context explicitly to minikube, if not already set.   
+
+---
+
+## Build and Deploy Toy Operator to your Kubernetes Cluster
+
+1. Clone this repository. 
+2. Open a command prompt and navigate to the root folder of this repo (which contains the custom-k8s-operator.sln file).
+3. Run the following commands to clean and build the project (Alternatively,  you can open the solution in Visual Studio, and build it)
+```
+dotnet clean
+dotnet build
+``` 
+4. The build process will generate a `config` folder in your project, with CRD and Kustomization files that can be used to install your operator to a K8S cluster.
+5. Open the project folder (with the .csproj file) and use `dotnet run install` command to install your CRD onto your cluster.
+6. If installation is successful, you will see a new resource type when you run `kubectl api-resources`
+
