@@ -13,6 +13,7 @@ using KubeOps.Operator.Finalizer;
 using KubeOps.Operator.Rbac;
 using Microsoft.Rest;
 using KubeOps.Operator.Entities.Extensions;
+using IdentityModel;
 
 namespace custom_k8s_operator.controllers
 {
@@ -60,13 +61,15 @@ namespace custom_k8s_operator.controllers
                 //1. Create a ConfigMap to store Skill configuration
                 var cfgName = await CreateOrUpdateConfigMapAsync(skill);
                 //2. Create a Deployment with 1 pod running the skill image
-                //var deploymentName = await CreateOrUpdateDeploymentAsync(skill);
+                var deploymentName = await CreateOrUpdateDeploymentAsync(skill);
+                
                 //3. [TODO] Create a Service hooked up to the deployment 
 
                 //write updated status to storage
                 skill.Status.CurrentState = SkillState.Created;
                 await this.kubernetesClient.UpdateStatus(skill);
 
+                //[EXPLORE] what are finalizers
                 //await finalizerManager.RegisterFinalizerAsync<SkillV1Finalizer>(skill);
                 return null; // returning 'null' will stop retries for reconciliation
             }
@@ -83,6 +86,25 @@ namespace custom_k8s_operator.controllers
                 throw;
             }
         }
+
+        public Task StatusModifiedAsync(SkillV1 entity)
+        {
+            logger.LogInformation($"{entity.Name()} called {nameof(StatusModifiedAsync)}.");
+
+            //maybe emit a metric for tracking operation frequency?
+
+            return Task.CompletedTask;
+        }
+
+        public async Task DeletedAsync(SkillV1 skill)
+        {
+            logger.LogInformation($"{skill.Name()} called {nameof(DeletedAsync)}.");
+
+            await this.kubernetesClient.Delete<V1ConfigMap>(skill.Name(), skill.Namespace());
+            await this.kubernetesClient.Delete<V1Deployment>(skill.Name(), skill.Namespace());
+        }
+
+        #region Code to construct Kubernetes resources for the given skill
 
         private async Task<string> CreateOrUpdateConfigMapAsync(SkillV1 skill)
         {
@@ -105,6 +127,7 @@ namespace custom_k8s_operator.controllers
             config.Data["platform"] = skill.Spec.Platform;
             config.Data["samplingIntervalInHours"] = skill.Spec.SamplingIntervalInHours.ToString();
 
+            //[EXPLORE] What are owner references and sub-resources in kubernetes
             //if(!configExists)
             //{
             //    config.AddOwnerReference(skill.MakeOwnerReference());
@@ -119,7 +142,7 @@ namespace custom_k8s_operator.controllers
         {
             var skillName = skill.Name();
             var skillNamespace = skill.Namespace();
-            
+
             var clusterResource = await this.kubernetesClient.Get<V1Deployment>(skillName, skillNamespace);
 
             V1Deployment updatedResource;
@@ -127,8 +150,8 @@ namespace custom_k8s_operator.controllers
             {
                 var targetResource = CopySkillToDeploymentResource(new V1Deployment(), skill);
 
-                // make current entity an owner of child resource
-                targetResource.AddOwnerReference(skill.MakeOwnerReference());
+                //make current entity an owner of child resource
+                //targetResource.AddOwnerReference(skill.MakeOwnerReference());
                 updatedResource = await kubernetesClient.Create(targetResource);
                 this.logger.LogInformation($"Child resource '{targetResource.Name()}' was created.");
             }
@@ -142,7 +165,7 @@ namespace custom_k8s_operator.controllers
             return updatedResource.Name();
         }
 
-        private static V1Deployment CopySkillToDeploymentResource(V1Deployment resource, SkillV1 entity)
+        private static V1Deployment CopySkillToDeploymentResource(V1Deployment resource, SkillV1 skill)
         {
             resource.ApiVersion = "apps/v1";
             resource.Kind = "Deployment";
@@ -150,14 +173,14 @@ namespace custom_k8s_operator.controllers
             // Update metadata
             resource.Metadata = new V1ObjectMeta
             {
-                Name = entity.Name(),
-                NamespaceProperty = entity.Namespace(),
+                Name = skill.Name(),
+                NamespaceProperty = skill.Namespace(),
                 Labels = new Dictionary<string, string>()
                 {
-                    { "app", entity.Name() }
+                    { "app", skill.Name() }
                 }
             };
-            
+
             // Update Spec, Assumption: Percept workloads will have deployments with 1 replica only
             resource.Spec = new V1DeploymentSpec
             {
@@ -166,21 +189,29 @@ namespace custom_k8s_operator.controllers
                 {
                     MatchLabels = new Dictionary<string, string>
                     {
-                        { "app", entity.Name() }
+                        { "app", skill.Name() }
                     }
                 }
             };
 
             // Set new Containers in the deployment
             //Additional Reading: https://kubernetes.io/docs/concepts/containers/images/
-            resource.Spec.Template = resource.Spec.Template ?? new V1PodTemplateSpec();
-            resource.Spec.Template.Spec = resource.Spec.Template.Spec ?? new V1PodSpec();
+            resource.Spec.Template ??= new V1PodTemplateSpec();
+            resource.Spec.Template.Metadata ??= new V1ObjectMeta
+            {
+                Labels = new Dictionary<string, string>
+                {
+                    { "app", skill.Name() }
+                }
+            };
+
+            resource.Spec.Template.Spec ??= new V1PodSpec();
             resource.Spec.Template.Spec.Containers = new List<V1Container>
             {
                 new V1Container()
                 {
-                    Name = entity.Name(),
-                    Image = entity.Spec.ImageUri,
+                    Name = skill.Name(),
+                    Image = skill.Spec.ImageUri,
                     ImagePullPolicy = "IfNotPresent"
                 }
             };
@@ -188,21 +219,6 @@ namespace custom_k8s_operator.controllers
             return resource;
         }
 
-        public Task StatusModifiedAsync(SkillV1 entity)
-        {
-            logger.LogInformation($"{entity.Name()} called {nameof(StatusModifiedAsync)}.");
-
-            //maybe emit a metric for tracking operation frequency?
-
-            return Task.CompletedTask;
-        }
-
-        public async Task DeletedAsync(SkillV1 skill)
-        {
-            logger.LogInformation($"{skill.Name()} called {nameof(DeletedAsync)}.");
-
-            await this.kubernetesClient.Delete<V1ConfigMap>(skill.Name(), skill.Namespace());
-            await this.kubernetesClient.Delete<V1Deployment>(skill.Name(), skill.Namespace());
-        }
+        #endregion
     }
 }
