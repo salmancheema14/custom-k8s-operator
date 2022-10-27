@@ -68,5 +68,20 @@ dotnet build
 ``` 
 4. The build process will generate a `config` folder in your project, with CRD and Kustomization files that can be used to install your operator to a K8S cluster.
 5. Open the project folder (with the .csproj file) and use `dotnet run install` command to install your CRD onto your cluster.
-6. If installation is successful, you will see a new resource type when you run `kubectl api-resources`
+6. If installation is successful, you will see a new resource type when you run `kubectl api-resources`.
+7.  Open the helm chart located in `<repository>\helm\`, using your favorite text editor, and customize the namespace and name parameters.
+8.  Use kubectl to apply the yml file to your cluster `kubectl apply -f Skill.yml`.
+9.  If you see an error about missing namespace, you can use kubectl to create the namespace, e.g., `kubectl create namespace "salman-ns"`.
+10. Open Visual Studio and do the following:    
+     a. Open the `SkillV1Controller.cs` file and put a breakpoint in the `ReconcileAsync` method.     
+     b. Start Debugging the project. This will launch your operator and make it ready to accept calls from `kubectl`.     
+     c. It will also launch a browser window. Leave it open and ignore it.     
+     d. If everything works correctly, your output/debug window should look something like this.     
+          
+     ![image](https://user-images.githubusercontent.com/105018698/198364388-1d4e2f19-83fb-451d-b795-aacfcd09d74a.png)
+
+11.  The breakpoint should be hit pretty quickly. Resource reconciliation is quite frequent. 
+12.  Trace through the code and examine all the K8S resources created as part of deploying the custom skill.     
+     a. You can use kubectl to view them, using `kubectl get skills --all-namespaces`, `kubectl get configmaps --all-namespaces`, and so on.     
+     b. You can view them in the minikube dashboard. Start the dashboard by `minikube dashboard` and switch to the appropriate namespace. 
 
