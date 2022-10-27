@@ -14,7 +14,10 @@ This project has skeleton code to build and deploy a toy operator example on you
     b. Remember to update `$PATH` variable on windows machines
 4. Install a Container or Virtual Machine Manager on your machine, e.g., Docker, HyperV etc.     
      a. If you have docker already, you're probably good. (in my test setup, I had docker inside a linux VM, and installed hyper-V on my windows machine).     
-     b. To enable Hyper-V, open a Windows Powershell window in Administrator mode, and run `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All`. 
+     b. To enable Hyper-V, open a Windows Powershell window in Administrator mode, and run 
+     ```
+     Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+     ```
 6. Install Minikube on your machine ([instructions](https://minikube.sigs.k8s.io/docs/start/)).
 7. Open a command prompt in Administrator mode, and start a local minikube cluster, using `minikube start`.
 8. Starting your local cluster for the first time does two things:      
