@@ -8,6 +8,39 @@ Check out the getting started guide [here](https://buehler.github.io/dotnet-oper
 
 *Note: The instructions below describe how to build and run this project using a local minikube cluster. However, if your `kubectl` is already configured to manage an existing cluster (AKS/Kind/other), feel free to use that as a target. As long as `kubectl` has appropriate access to a K8S cluster, the build and deploy instructions should work*.    
 
+---
+
+## What are Kubernetes Operators and why do we need them?
+
+Kubernetes Operators ([docs](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)) allow us to extend the capabilities of the Kubernetes control plane. We can use them to enable orchestration, automation and management of customized workflows. 
+
+* Take a look at [OperatorHub](https://operatorhub.io/) to get an idea of the range of current operators. Each entry in operator hub also lists a maturity level. These are useful for understanding the range of tasks that can be done with the operator. 
+* To create an operator, two things are required:     
+    * `CustomResourceDefinition` (CRD): This is an api-level object in the kubernetes control plane, and can be created by applying a yaml file via `kubectl`. A CRD is essentially the contract for custom resources that will be consumed by a custom operator. Try executing `kubectl explain CustomResourceDefinition` to see details of the contract. [docs](https://kubernetes.io/docs/reference/kubernetes-api/extend-resources/custom-resource-definition-v1/)     
+    * `Controller`: A controller allows custom reconciliation inside the Kubernetes control loop. Kubernetes resources implement a state-seeking pattern by default, and the `api-server` takes care of CRUD operations for all resources. Controllers can have domain-specific code that defines how to bring the current state of cluster resources in sync with the desired state. [Docs](https://kubernetes.io/docs/concepts/architecture/controller/)     
+* A `CustomResource` is a single instantiation of a `CustomResourceDefinition` and can be created by using `kubectl` to apply a yaml file. [Docs](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
+* Here is a good [discussion](https://kubernetes.io/docs/concepts/architecture/controller/) of when operators might be needed.
+    
+
+### Operator Maturity Levels
+There appear to be 5 accepted levels of maturity for Kubernetes Operators ([Redhat Docs](https://operatorframework.io/operator-capabilities/)). 
+1. Basic Install : Provision Required Resources
+2. Upgrades : minor and patch version upgrades
+3. Full Lifecycle Support : storage, app lifecycles, backups, recovery
+4. Insights : deep metrics, analytics and logging
+5. Auto-Pilot : Automatic Scaling (vert/horizontal), Automatic config tuning
+
+### Further Reading / Resources
+
+1. CNCF Operator White Paper [link](https://github.com/cncf/tag-app-delivery/blob/eece8f7307f2970f46f100f51932db106db46968/operator-wg/whitepaper/Operator-WhitePaper_v1-0.md)
+2. KubePlus Guidelines [link](https://github.com/cloud-ark/kubeplus/blob/master/Guidelines.md)
+3. Best Practices [link](https://cloud.google.com/blog/products/containers-kubernetes/best-practices-for-building-kubernetes-operators-and-stateful-apps)
+4. Example Operators (with source code)    
+   a. Prometheus [link](https://github.com/coreos/prometheus-operator)   
+   b. etcd [link](https://github.com/coreos/etcd-operator)
+
+---
+
 ## Pre-Requisites
 
 1. Dotnet 6.0
