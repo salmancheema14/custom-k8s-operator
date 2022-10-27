@@ -1,14 +1,17 @@
 # C# Operator Sample for Kubernetes (using KubeOps)
 
-This project has skeleton code to build and deploy a toy operator example on your choice of kubernetes cluster.   
+This project has skeleton C# code to build and deploy a toy operator on your choice of kubernetes cluster.   
 
+The code sample uses the [KubeOps](https://buehler.github.io/dotnet-operator-sdk/) Library, along with its dotnet CLI extensions.    
+
+Check out the getting started guide [here](https://buehler.github.io/dotnet-operator-sdk/docs/getting_started.html).     
 
 *Note: The instructions below describe how to build and run this project using a local minikube cluster. However, if your `kubectl` is already configured to manage an existing cluster (AKS/Kind/other), feel free to use that as a target. As long as `kubectl` has appropriate access to a K8S cluster, the build and deploy instructions should work*.    
 
 ## Pre-Requisites
 
 1. Dotnet 6.0
-2. Visual Studio. THis is optional, but highly useful (The project has been tested using Visual Studio 2022) 
+2. Visual Studio. This is optional, but highly useful (The project has been tested using Visual Studio 2022) 
 3. Install `kubectl`on your machine, if not already installed.    
     a. If you have Azure CLI installed, you can use `az aks install-cli` command in Windows Powershell to install kubectl.    
     b. Remember to update `$PATH` variable on windows machines
