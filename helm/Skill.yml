@@ -1,8 +1,8 @@
 apiVersion: percept.demo.local/v1
 kind: Skill
 metadata:
-  name: skill1
-  namespace: salman-ns
+  name: <skill_name>
+  namespace: <namespace_name>-ns
 spec:
   enableVerboseTelemetry : true
   samplingIntervalInHours : 1
