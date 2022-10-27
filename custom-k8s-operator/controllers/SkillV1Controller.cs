@@ -100,6 +100,7 @@ namespace custom_k8s_operator.controllers
         {
             logger.LogInformation($"{skill.Name()} called {nameof(DeletedAsync)}.");
 
+            //[TODO] Fix Deletion
             await this.kubernetesClient.Delete<V1ConfigMap>(skill.Name(), skill.Namespace());
             await this.kubernetesClient.Delete<V1Deployment>(skill.Name(), skill.Namespace());
         }
