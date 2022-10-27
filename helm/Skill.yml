@@ -1,0 +1,10 @@
+apiVersion: percept.demo.local/v1
+kind: Skill
+metadata:
+  name: skill1
+  namespace: salman-ns
+spec:
+  enableVerboseTelemetry : true
+  samplingIntervalInHours : 1
+  platform : "DeepStream"
+  imageUri : "registry.k8s.io/echoserver:1.4"

@@ -12,6 +12,7 @@ using KubeOps.Operator.Controller.Results;
 using KubeOps.Operator.Finalizer;
 using KubeOps.Operator.Rbac;
 using Microsoft.Rest;
+using KubeOps.Operator.Entities.Extensions;
 
 namespace custom_k8s_operator.controllers
 {
@@ -54,18 +55,19 @@ namespace custom_k8s_operator.controllers
                     return null;
                 }
 
-                //1. Run a 'Job' to hook up a sensor
-                //2. Create a ConfigMap to store Skill configuration
-                var cfgName = await CreateOrUpdateConfigMapAsync(skillName, skillNamespace, skill);
-                //3. Create a Deployment with 1 pod running the skill image
-                //4. Create a Service hooked up to the deployment 
+
+
+                //1. Create a ConfigMap to store Skill configuration
+                var cfgName = await CreateOrUpdateConfigMapAsync(skill);
+                //2. Create a Deployment with 1 pod running the skill image
+                //var deploymentName = await CreateOrUpdateDeploymentAsync(skill);
+                //3. [TODO] Create a Service hooked up to the deployment 
 
                 //write updated status to storage
-                skill.Status.ConfigMapName = cfgName;
                 skill.Status.CurrentState = SkillState.Created;
                 await this.kubernetesClient.UpdateStatus(skill);
 
-                await finalizerManager.RegisterFinalizerAsync<SkillV1Finalizer>(skill);
+                //await finalizerManager.RegisterFinalizerAsync<SkillV1Finalizer>(skill);
                 return null; // returning 'null' will stop retries for reconciliation
             }
             catch(Exception ex)
@@ -82,25 +84,108 @@ namespace custom_k8s_operator.controllers
             }
         }
 
-        private async Task<string> CreateOrUpdateConfigMapAsync(string skillName, string skillNamespace, SkillV1 skill)
+        private async Task<string> CreateOrUpdateConfigMapAsync(SkillV1 skill)
         {
+            var skillName = skill.Name();
+            var skillNamespace = skill.Namespace();
+
             var config = await this.kubernetesClient.Get<V1ConfigMap>(skillName, skillNamespace);
+            bool configExists = config != null;
             config ??= new V1ConfigMap
             {
                 Metadata = new V1ObjectMeta
                 {
                     Name = skillName,
                     NamespaceProperty = skillNamespace
-                }
+                },
+                Data = new Dictionary<string, string>()
             };
 
-            config.Data["verboseLogging"] = skill.Spec.EnableVerboseLogging.ToString();
-            config.Data["enableSilentRecognitionMode"] = skill.Spec.EnableVerboseLogging.ToString();
-            config.Data["samplingIntervalInHours"] = skill.Spec.EnableVerboseLogging.ToString();
+            config.Data["verboseTelemetry"] = skill.Spec.EnableVerboseTelemetry.ToString();
+            config.Data["platform"] = skill.Spec.Platform;
+            config.Data["samplingIntervalInHours"] = skill.Spec.SamplingIntervalInHours.ToString();
+
+            //if(!configExists)
+            //{
+            //    config.AddOwnerReference(skill.MakeOwnerReference());
+            //}
 
             //Save is equivalent to CreateOrUpdate. Alternatively, we can use Create and/or Update methods from the k8s client
             var updatedConfig = await this.kubernetesClient.Save<V1ConfigMap>(config);
             return updatedConfig.Name();
+        }
+
+        private async Task<string> CreateOrUpdateDeploymentAsync(SkillV1 skill)
+        {
+            var skillName = skill.Name();
+            var skillNamespace = skill.Namespace();
+            
+            var clusterResource = await this.kubernetesClient.Get<V1Deployment>(skillName, skillNamespace);
+
+            V1Deployment updatedResource;
+            if (clusterResource == null)
+            {
+                var targetResource = CopySkillToDeploymentResource(new V1Deployment(), skill);
+
+                // make current entity an owner of child resource
+                targetResource.AddOwnerReference(skill.MakeOwnerReference());
+                updatedResource = await kubernetesClient.Create(targetResource);
+                this.logger.LogInformation($"Child resource '{targetResource.Name()}' was created.");
+            }
+            else
+            {
+                var targetResource = CopySkillToDeploymentResource(clusterResource, skill);
+                updatedResource = await this.kubernetesClient.Update(targetResource);
+                this.logger.LogInformation($"Child resource '{targetResource.Name()}' was updated.");
+            }
+
+            return updatedResource.Name();
+        }
+
+        private static V1Deployment CopySkillToDeploymentResource(V1Deployment resource, SkillV1 entity)
+        {
+            resource.ApiVersion = "apps/v1";
+            resource.Kind = "Deployment";
+
+            // Update metadata
+            resource.Metadata = new V1ObjectMeta
+            {
+                Name = entity.Name(),
+                NamespaceProperty = entity.Namespace(),
+                Labels = new Dictionary<string, string>()
+                {
+                    { "app", entity.Name() }
+                }
+            };
+            
+            // Update Spec, Assumption: Percept workloads will have deployments with 1 replica only
+            resource.Spec = new V1DeploymentSpec
+            {
+                Replicas = 1,
+                Selector = new V1LabelSelector()
+                {
+                    MatchLabels = new Dictionary<string, string>
+                    {
+                        { "app", entity.Name() }
+                    }
+                }
+            };
+
+            // Set new Containers in the deployment
+            //Additional Reading: https://kubernetes.io/docs/concepts/containers/images/
+            resource.Spec.Template = resource.Spec.Template ?? new V1PodTemplateSpec();
+            resource.Spec.Template.Spec = resource.Spec.Template.Spec ?? new V1PodSpec();
+            resource.Spec.Template.Spec.Containers = new List<V1Container>
+            {
+                new V1Container()
+                {
+                    Name = entity.Name(),
+                    Image = entity.Spec.ImageUri,
+                    ImagePullPolicy = "IfNotPresent"
+                }
+            };
+
+            return resource;
         }
 
         public Task StatusModifiedAsync(SkillV1 entity)
@@ -117,6 +202,7 @@ namespace custom_k8s_operator.controllers
             logger.LogInformation($"{skill.Name()} called {nameof(DeletedAsync)}.");
 
             await this.kubernetesClient.Delete<V1ConfigMap>(skill.Name(), skill.Namespace());
+            await this.kubernetesClient.Delete<V1Deployment>(skill.Name(), skill.Namespace());
         }
     }
 }
