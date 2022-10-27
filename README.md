@@ -7,15 +7,17 @@ This project has skeleton code to build and deploy a toy operator example on you
 
 ## Pre-Requisites
 
-You will need the following
 1. Dotnet 6.0
 2. Visual Studio. THis is optional, but highly useful (The project has been tested using Visual Studio 2022) 
 3. Install `kubectl`on your machine, if not already installed.    
     a. If you have Azure CLI installed, you can use `az aks install-cli` command in Windows Powershell to install kubectl.    
     b. Remember to update `$PATH` variable on windows machines
-4. Install Minikube on your machine ([instructions](https://minikube.sigs.k8s.io/docs/start/)).
-5. Open a command prompt in Administrator mode, and start a local minikube cluster, using `minikube start`.
-6. Starting your local cluster for the first time does two things:      
+4. Install a Container or Virtual Machine Manager on your machine, e.g., Docker, HyperV etc.     
+     a. If you have docker already, you're probably good. (in my test setup, I had docker inside a linux VM, and installed hyper-V on my windows machine).     
+     b. To enable Hyper-V, open a Windows Powershell window in Administrator mode, and run `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All`. 
+6. Install Minikube on your machine ([instructions](https://minikube.sigs.k8s.io/docs/start/)).
+7. Open a command prompt in Administrator mode, and start a local minikube cluster, using `minikube start`.
+8. Starting your local cluster for the first time does two things:      
     a. A context entry is configured in the local kubeconfig file for the minikube cluster.
     b. The current context in `kubectl` is set to point to your local minikube cluster.
     
